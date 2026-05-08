@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Somnambulist — Cover</title>
+<link rel="stylesheet" href="https://use.typekit.net/oyw0phv.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --purple:     rgba(160,140,255,1);
+    --purple-dim: rgba(160,140,255,0.45);
+    --purple-glow:rgba(140,120,255,0.22);
+  }
+  body {
+    background: #06060a;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: "bitcount-mono-single-square", monospace;
+    font-weight: 500;
+    cursor: none;
+  }
+  #frame {
+    position: relative;
+    width: 900px;
+    height: 520px;
+    border: 1px solid rgba(160,140,255,0.18);
+    overflow: hidden;
+  }
+  #cvs { position: absolute; inset: 0; display: block; }
+
+  #frame::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.09) 0px, rgba(0,0,0,0.09) 1px,
+      transparent 1px, transparent 3px
+    );
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* corner stars */
+  .corner-star {
+    position: absolute;
+    width: 28px; height: 28px;
+    z-index: 8;
+  }
+  .cs-tl { top:14px;    left:14px;  }
+  .cs-tr { top:14px;    right:14px; }
+  .cs-bl { bottom:14px; left:14px;  }
+  .cs-br { bottom:14px; right:14px; }
+
+  #title-wrap {
+    position: absolute;
+    top: -140px; left: 0; right: 0;
+    text-align: center;
+    z-index: 7;
+    pointer-events: none;
+    transition: top 1s cubic-bezier(0.34,1.15,0.64,1);
+  }
+  #frame:hover #title-wrap { top: 44px; }
+  #game-title {
+    font-size: 52px;
+    letter-spacing: 6px;
+    color: rgba(240,235,255,0.95);
+    text-shadow: 0 0 40px rgba(140,120,255,0.55), 0 2px 14px rgba(0,0,0,0.9);
+  }
+  #game-sub {
+    margin-top: 10px;
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: var(--purple-dim);
+    text-shadow: 0 0 14px var(--purple-glow);
+  }
+
+  #author-wrap {
+    position: absolute;
+    bottom: -80px; left: 0; right: 0;
+    text-align: center;
+    z-index: 7;
+    pointer-events: none;
+    transition: bottom 1s cubic-bezier(0.34,1.15,0.64,1) 0.12s;
+  }
+  #frame:hover #author-wrap { bottom: 32px; }
+  #author {
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: rgba(200,190,255,0.55);
+    text-shadow: 0 0 12px var(--purple-glow);
+  }
+
+  /* hide real cursor inside frame */
+  #frame { cursor: none; }
+</style>
+</head>
+<body>
+
+<div id="frame">
+  <canvas id="cvs"></canvas>
+  <!-- corner stars (SVG inline) -->
+  <svg class="corner-star cs-tl" viewBox="0 0 28 28">
+    <g transform="translate(14,14)">
+      <circle r="11" fill="none" stroke="rgba(160,140,255,0.25)" stroke-width="0.7">
+        <animate attributeName="r" values="11;13;11" dur="2.8s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.25;0.5;0.25" dur="2.8s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="6" fill="none" stroke="rgba(160,140,255,0.4)" stroke-width="0.6">
+        <animate attributeName="r" values="6;7.5;6" dur="2.8s" repeatCount="indefinite"/>
+      </circle>
+      <!-- 4-point star shape -->
+      <path d="M0,-9 L1.2,-1.2 L9,0 L1.2,1.2 L0,9 L-1.2,1.2 L-9,0 L-1.2,-1.2 Z"
+            fill="rgba(200,190,255,0.85)">
+        <animate attributeName="fill-opacity" values="0.85;1;0.85" dur="2.8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="rotate"
+          values="0;45;0" dur="8s" repeatCount="indefinite"/>
+      </path>
+      <!-- core dot -->
+      <circle r="1.8" fill="rgba(235,230,255,1)">
+        <animate attributeName="r" values="1.8;2.4;1.8" dur="2.8s" repeatCount="indefinite"/>
+      </circle>
+      <!-- glow filter via drop-shadow trick -->
+      <circle r="5" fill="rgba(140,120,255,0.15)">
+        <animate attributeName="r" values="5;8;5" dur="2.8s" repeatCount="indefinite"/>
+        <animate attributeName="fill-opacity" values="0.15;0.3;0.15" dur="2.8s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </svg>
+
+  <svg class="corner-star cs-tr" viewBox="0 0 28 28">
+    <g transform="translate(14,14)">
+      <circle r="11" fill="none" stroke="rgba(160,140,255,0.25)" stroke-width="0.7">
+        <animate attributeName="r" values="11;13;11" dur="3.1s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.25;0.5;0.25" dur="3.1s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="6" fill="none" stroke="rgba(160,140,255,0.4)" stroke-width="0.6">
+        <animate attributeName="r" values="6;7.5;6" dur="3.1s" repeatCount="indefinite"/>
+      </circle>
+      <path d="M0,-9 L1.2,-1.2 L9,0 L1.2,1.2 L0,9 L-1.2,1.2 L-9,0 L-1.2,-1.2 Z"
+            fill="rgba(200,190,255,0.85)">
+        <animate attributeName="fill-opacity" values="0.85;1;0.85" dur="3.1s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="rotate"
+          values="45;0;45" dur="9s" repeatCount="indefinite"/>
+      </path>
+      <circle r="1.8" fill="rgba(235,230,255,1)">
+        <animate attributeName="r" values="1.8;2.4;1.8" dur="3.1s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="5" fill="rgba(140,120,255,0.15)">
+        <animate attributeName="r" values="5;8;5" dur="3.1s" repeatCount="indefinite"/>
+        <animate attributeName="fill-opacity" values="0.15;0.3;0.15" dur="3.1s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </svg>
+
+  <svg class="corner-star cs-bl" viewBox="0 0 28 28">
+    <g transform="translate(14,14)">
+      <circle r="11" fill="none" stroke="rgba(160,140,255,0.25)" stroke-width="0.7">
+        <animate attributeName="r" values="11;13;11" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.25;0.5;0.25" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="6" fill="none" stroke="rgba(160,140,255,0.4)" stroke-width="0.6">
+        <animate attributeName="r" values="6;7.5;6" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <path d="M0,-9 L1.2,-1.2 L9,0 L1.2,1.2 L0,9 L-1.2,1.2 L-9,0 L-1.2,-1.2 Z"
+            fill="rgba(200,190,255,0.85)">
+        <animate attributeName="fill-opacity" values="0.85;1;0.85" dur="2.5s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="rotate"
+          values="0;-45;0" dur="7s" repeatCount="indefinite"/>
+      </path>
+      <circle r="1.8" fill="rgba(235,230,255,1)">
+        <animate attributeName="r" values="1.8;2.4;1.8" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="5" fill="rgba(140,120,255,0.15)">
+        <animate attributeName="r" values="5;8;5" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="fill-opacity" values="0.15;0.3;0.15" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </svg>
+
+  <svg class="corner-star cs-br" viewBox="0 0 28 28">
+    <g transform="translate(14,14)">
+      <circle r="11" fill="none" stroke="rgba(160,140,255,0.25)" stroke-width="0.7">
+        <animate attributeName="r" values="11;13;11" dur="3.4s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.25;0.5;0.25" dur="3.4s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="6" fill="none" stroke="rgba(160,140,255,0.4)" stroke-width="0.6">
+        <animate attributeName="r" values="6;7.5;6" dur="3.4s" repeatCount="indefinite"/>
+      </circle>
+      <path d="M0,-9 L1.2,-1.2 L9,0 L1.2,1.2 L0,9 L-1.2,1.2 L-9,0 L-1.2,-1.2 Z"
+            fill="rgba(200,190,255,0.85)">
+        <animate attributeName="fill-opacity" values="0.85;1;0.85" dur="3.4s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="rotate"
+          values="-45;0;-45" dur="10s" repeatCount="indefinite"/>
+      </path>
+      <circle r="1.8" fill="rgba(235,230,255,1)">
+        <animate attributeName="r" values="1.8;2.4;1.8" dur="3.4s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="5" fill="rgba(140,120,255,0.15)">
+        <animate attributeName="r" values="5;8;5" dur="3.4s" repeatCount="indefinite"/>
+        <animate attributeName="fill-opacity" values="0.15;0.3;0.15" dur="3.4s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </svg>
+  <div id="title-wrap">
+    <div id="game-title">Somnambulist</div>
+    <div id="game-sub">a dream you thought you knew</div>
+  </div>
+  <div id="author-wrap">
+    <div id="author">Zoey MinXuan Yu</div>
+  </div>
+</div>
+
+<script>
+var frame = document.getElementById('frame');
+var cvs   = document.getElementById('cvs');
+var ctx   = cvs.getContext('2d');
+
+var W = frame.offsetWidth;
+var H = frame.offsetHeight;
+cvs.width  = W;
+cvs.height = H;
+
+var BLOCK = 22;
+var COLS  = Math.ceil(W / BLOCK);
+var ROWS  = Math.ceil(H / BLOCK);
+var TRAIL_FADE = 3.5; // seconds
+
+// trail: col,row → timestamp lit
+var trailTime = {};
+
+// star (cursor) position in pixels
+var starX = W / 2;
+var starY = H / 2;
+var mouseInside = false;
+
+// track mouse over frame
+frame.addEventListener('mousemove', function(e){
+  var rect = frame.getBoundingClientRect();
+  starX = e.clientX - rect.left;
+  starY = e.clientY - rect.top;
+  mouseInside = true;
+
+  // light the cell under cursor + neighbors
+  var c = Math.floor(starX / BLOCK);
+  var r = Math.floor(starY / BLOCK);
+  lightCell(c, r, 1.0);
+  lightCell(c-1, r, 0.45);
+  lightCell(c+1, r, 0.45);
+  lightCell(c,   r-1, 0.45);
+  lightCell(c,   r+1, 0.45);
+  lightCell(c-1, r-1, 0.18);
+  lightCell(c+1, r-1, 0.18);
+  lightCell(c-1, r+1, 0.18);
+  lightCell(c+1, r+1, 0.18);
+});
+
+frame.addEventListener('mouseleave', function(){
+  mouseInside = false;
+});
+
+function lightCell(c, r, strength){
+  if(c < 0 || c >= COLS || r < 0 || r >= ROWS) return;
+  var key = c + ',' + r;
+  var now = performance.now() / 1000;
+  // store as "effective lit time" — stronger cells appear fresher
+  trailTime[key] = { t: now, s: strength };
+}
+
+var startT = null;
+
+function draw(ts){
+  if(!startT) startT = ts;
+  var now = ts / 1000;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // background
+  ctx.fillStyle = '#06060a';
+  ctx.fillRect(0, 0, W, H);
+
+  // ── grid cells (trail) ──
+  var keys = Object.keys(trailTime);
+  for(var k = 0; k < keys.length; k++){
+    var key  = keys[k];
+    var data = trailTime[key];
+    var age  = now - data.t;
+    var effective = age / (TRAIL_FADE * data.s); // weaker cells fade faster
+    if(effective >= 1){ delete trailTime[key]; continue; }
+
+    var brightness = Math.pow(1 - effective, 0.65);
+    var parts = key.split(',');
+    var c = parseInt(parts[0]);
+    var r = parseInt(parts[1]);
+
+    var fillR, fillG, fillB, a;
+    if(brightness > 0.8){
+      fillR=225; fillG=218; fillB=255; a=brightness*0.95;
+    } else if(brightness > 0.5){
+      fillR=160; fillG=140; fillB=255; a=brightness*0.82;
+    } else if(brightness > 0.25){
+      fillR=80;  fillG=65;  fillB=180; a=brightness*0.7;
+    } else {
+      fillR=20;  fillG=15;  fillB=60;  a=brightness*0.55;
+    }
+
+    ctx.globalAlpha = a;
+    ctx.fillStyle = 'rgb('+fillR+','+fillG+','+fillB+')';
+    ctx.fillRect(c*BLOCK+1, r*BLOCK+1, BLOCK-2, BLOCK-2);
+
+    // inner glow for bright cells
+    if(brightness > 0.55){
+      var grd = ctx.createRadialGradient(
+        c*BLOCK+BLOCK/2, r*BLOCK+BLOCK/2, 0,
+        c*BLOCK+BLOCK/2, r*BLOCK+BLOCK/2, BLOCK
+      );
+      grd.addColorStop(0, 'rgba(200,190,255,'+(brightness*0.45)+')');
+      grd.addColorStop(1, 'rgba(100,80,220,0)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(c*BLOCK, r*BLOCK, BLOCK, BLOCK);
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  // ── grid lines ──
+  var gA = 0.09 + 0.035 * Math.sin(ts / 1400);
+  ctx.strokeStyle = 'rgba(160,140,255,' + gA + ')';
+  ctx.lineWidth = 0.5;
+  for(var col = 0; col <= COLS; col++){
+    ctx.beginPath(); ctx.moveTo(col*BLOCK, 0); ctx.lineTo(col*BLOCK, H); ctx.stroke();
+  }
+  for(var row = 0; row <= ROWS; row++){
+    ctx.beginPath(); ctx.moveTo(0, row*BLOCK); ctx.lineTo(W, row*BLOCK); ctx.stroke();
+  }
+
+  // ── star cursor ──
+  if(mouseInside){
+    var pulse = 0.5 + 0.5 * Math.sin(ts / 380);
+
+    // outer ring
+    ctx.beginPath();
+    ctx.arc(starX, starY, 11, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(160,140,255,' + (0.25 + pulse*0.2) + ')';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // pulsing mid ring
+    ctx.beginPath();
+    ctx.arc(starX, starY, 6 + pulse*2.5, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(190,175,255,' + (0.2 + pulse*0.35) + ')';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    // core glow
+    var cg = ctx.createRadialGradient(starX, starY, 0, starX, starY, 8);
+    cg.addColorStop(0, 'rgba(235,230,255,0.98)');
+    cg.addColorStop(0.4, 'rgba(160,140,255,0.75)');
+    cg.addColorStop(1, 'rgba(100,80,220,0)');
+    ctx.fillStyle = cg;
+    ctx.beginPath();
+    ctx.arc(starX, starY, 8, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // ── vignette ──
+  var vig = ctx.createRadialGradient(W/2, H/2, H*0.15, W/2, H/2, H*0.8);
+  vig.addColorStop(0, 'rgba(0,0,0,0)');
+  vig.addColorStop(1, 'rgba(0,0,8,0.82)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── subtle static ──
+  for(var n = 0; n < 35; n++){
+    ctx.fillStyle = 'rgba(160,150,255,'+(0.03+Math.random()*0.08)+')';
+    ctx.fillRect(Math.random()*W, Math.random()*H, 1, 1);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

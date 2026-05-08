@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somnambulist</title>
+  <link rel="stylesheet" href="https://use.typekit.net/oyw0phv.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- TITLE -->
+<div id="title-screen" class="screen active">
+  <div class="title-bg"></div>
+  
+  
+  
+  <div class="title-content">
+    <p class="t-pre">the moment you close your eyes</p>
+    <h1 class="t-main">Somnambulist</h1>
+    <p class="t-en">S O M N A M B U L I S T</p>
+    <p class="t-desc">Some nights, a dream leads you<br>to a place you thought you knew</p>
+    <button id="start-btn">Enter the Dream</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen">
+  <div id="game-layout">
+    <div id="scene-panel">
+      <div id="status-bar">
+        <div id="room-name-wrap">
+          <span id="room-icon">◈</span>
+          <span id="room-name">???</span>
+        </div>
+        <div id="collect-bar">
+          <span class="collect-lbl">items</span>
+          <div class="pips">
+            <div class="pip" id="p0"></div><div class="pip" id="p1"></div>
+            <div class="pip" id="p2"></div><div class="pip" id="p3"></div>
+            <div class="pip" id="p4"></div>
+          </div>
+        </div>
+        <div id="threat-wrap">
+          <div id="threat-dot"></div>
+          <span id="threat-lbl">quiet</span>
+        </div>
+      </div>
+      <div id="img-area">
+        
+        <img id="scene-img" src="" style="width:100%;height:100%;object-fit:cover;display:block;">
+        <img id="warm-img" src="assets/bedroom-warm.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;pointer-events:none;">
+                <canvas id="glitch-canvas" style="position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;"></canvas>
+        <span id="img-room-lbl"></span>
+        
+      </div>
+      <div id="story-log"><div id="story-text"></div></div>
+    </div>
+
+    <div id="side-panel">
+      <div id="inv-box">
+        <div class="panel-lbl">Anchors</div>
+        <div id="inv-list"><span class="empty">Nothing to hold onto</span></div>
+      </div>
+      <div id="map-box">
+        <div class="panel-lbl">Map</div>
+        <div id="minimap-wrap" style="padding:8px 10px;">
+          <svg id="minimap" width="100%" viewBox="0 0 260 210" style="display:block;">
+
+            <!-- floor 1 label -->
+            <text x="4" y="9" style="font-size:7px;fill:rgba(255,255,255,0.55);letter-spacing:2px;font-family:sans-serif;">Floor 1</text>
+
+            <!-- floor 1 outer wall -->
+            <rect x="30" y="12" width="228" height="88" fill="#0a0a14" stroke="#252535" stroke-width="1" rx="1"/>
+
+            <!-- balcony -->
+            <rect id="mr-balcony" x="4" y="20" width="28" height="52" fill="#080910" stroke="#181828" stroke-width="0.8" stroke-dasharray="3,2"/>
+            <text x="18" y="47" style="font-size:6px;fill:rgba(255,255,255,0.65);text-anchor:middle;font-family:sans-serif;">Balcony</text>
+            <!-- balcony door -->
+            <line x1="32" y1="28" x2="32" y2="42" stroke="#07070d" stroke-width="2"/>
+            <path d="M32,28 Q20,28 20,42" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- living room -->
+            <rect id="mr-living" x="30" y="12" width="90" height="88" fill="#0d0d1a" stroke="#1e1e30" stroke-width="0.8"/>
+            <text x="75" y="58" style="font-size:8px;fill:rgba(255,255,255,0.75);text-anchor:middle;font-family:sans-serif;">Living Room</text>
+
+            <!-- stairwell (floor 1) -->
+            <rect id="mr-stair1" x="120" y="12" width="30" height="88" fill="#0b0b12" stroke="#c8a84030" stroke-width="0.8"/>
+            <line x1="121" y1="20" x2="149" y2="20" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="28" x2="149" y2="28" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="36" x2="149" y2="36" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="44" x2="149" y2="44" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="52" x2="149" y2="52" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="60" x2="149" y2="60" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="68" x2="149" y2="68" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="76" x2="149" y2="76" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="84" x2="149" y2="84" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <text x="135" y="57" style="font-size:6px;fill:rgba(255,200,80,0.7);text-anchor:middle;font-family:sans-serif;">stair</text>
+            <!-- living → stair door -->
+            <line x1="120" y1="32" x2="120" y2="48" stroke="#07070d" stroke-width="2"/>
+            <path d="M120,32 Q108,32 108,48" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- hallway (floor 1 vertical) -->
+            <rect id="mr-corridor" x="150" y="12" width="26" height="88" fill="#090910" stroke="#181820" stroke-width="0.8"/>
+            <text x="163" y="75" style="font-size:6px;fill:rgba(255,255,255,0.55);text-anchor:middle;font-family:sans-serif;">hall</text>
+            <!-- stair → hallway door -->
+            <line x1="150" y1="32" x2="150" y2="48" stroke="#07070d" stroke-width="2"/>
+            <path d="M150,32 Q162,32 162,48" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- kitchen (upper right) -->
+            <rect id="mr-kitchen" x="176" y="12" width="82" height="46" fill="#0d0d1a" stroke="#1e1e30" stroke-width="0.8"/>
+            <text x="217" y="37" style="font-size:8px;fill:rgba(255,255,255,0.75);text-anchor:middle;font-family:sans-serif;">Kitchen</text>
+            <!-- hallway → kitchen door -->
+            <line x1="176" y1="20" x2="176" y2="34" stroke="#07070d" stroke-width="2"/>
+            <path d="M176,20 Q188,20 188,34" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- storage (lower right) -->
+            <rect id="mr-storage" x="176" y="58" width="82" height="42" fill="#0d0d1a" stroke="#1e1e30" stroke-width="0.8"/>
+            <text x="217" y="81" style="font-size:8px;fill:rgba(255,255,255,0.75);text-anchor:middle;font-family:sans-serif;">Storage</text>
+            <!-- hallway → storage door -->
+            <line x1="176" y1="64" x2="176" y2="78" stroke="#07070d" stroke-width="2"/>
+            <path d="M176,64 Q188,64 188,78" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- separator -->
+            <line x1="4" y1="106" x2="256" y2="106" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+            <text x="4" y="114" style="font-size:7px;fill:rgba(255,255,255,0.55);letter-spacing:2px;font-family:sans-serif;">Floor 2</text>
+
+            <!-- floor 2 outer wall -->
+            <rect x="4" y="117" width="252" height="88" fill="#0a0a14" stroke="#252535" stroke-width="1" rx="1"/>
+
+            <!-- hallway (horizontal, left) -->
+            <rect id="mr-hall2-left" x="4" y="152" width="116" height="22" fill="#090910" stroke="#181820" stroke-width="0.8"/>
+            <!-- hallway (horizontal, right) -->
+            <rect id="mr-hall2-right" x="150" y="152" width="106" height="22" fill="#090910" stroke="#181820" stroke-width="0.8"/>
+            <text x="62" y="165" style="font-size:6px;fill:rgba(255,255,255,0.6);text-anchor:middle;font-family:sans-serif;">Hallway</text>
+            <text x="200" y="165" style="font-size:6px;fill:rgba(255,255,255,0.6);text-anchor:middle;font-family:sans-serif;">Hallway</text>
+
+            <!-- 楼梯间（二楼，对齐一楼） -->
+            <rect x="120" y="117" width="30" height="88" fill="#0b0b12" stroke="#c8a84030" stroke-width="0.8"/>
+            <line x1="121" y1="125" x2="149" y2="125" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="133" x2="149" y2="133" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="141" x2="149" y2="141" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="149" x2="149" y2="149" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="157" x2="149" y2="157" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="165" x2="149" y2="165" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="173" x2="149" y2="173" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="181" x2="149" y2="181" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <line x1="121" y1="189" x2="149" y2="189" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>
+            <text x="135" y="162" style="font-size:6px;fill:rgba(255,200,80,0.7);text-anchor:middle;font-family:sans-serif;">stair</text>
+            <!-- stair → hallway left -->
+            <line x1="120" y1="156" x2="120" y2="170" stroke="#07070d" stroke-width="2"/>
+            <path d="M120,156 Q108,156 108,170" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+            <!-- stair → hallway right -->
+            <line x1="150" y1="156" x2="150" y2="170" stroke="#07070d" stroke-width="2"/>
+            <path d="M150,156 Q162,156 162,170" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- my room (upper left) -->
+            <rect id="mr-bedroom" x="4" y="117" width="72" height="35" fill="#0f0f1e" stroke="#2a2a50" stroke-width="1"/>
+            <text x="40" y="136" style="font-size:7px;fill:rgba(180,160,255,0.95);text-anchor:middle;font-family:sans-serif;font-weight:bold;">My Room</text>
+            <!-- 门 -->
+            <line x1="24" y1="152" x2="46" y2="152" stroke="#07070d" stroke-width="2"/>
+            <path d="M24,152 Q24,138 46,138" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- my bathroom (right of room) -->
+            <rect id="mr-bathroom" x="76" y="117" width="44" height="35" fill="#0d0d1a" stroke="#1e1e30" stroke-width="0.8"/>
+            <text x="98" y="136" style="font-size:7px;fill:rgba(255,255,255,0.75);text-anchor:middle;font-family:sans-serif;">My Bath</text>
+            <!-- 门 -->
+            <line x1="82" y1="152" x2="104" y2="152" stroke="#07070d" stroke-width="2"/>
+            <path d="M82,152 Q82,138 104,138" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- parents study (upper right of stair) -->
+            <rect id="mr-study" x="150" y="117" width="106" height="35" fill="#0d0d1a" stroke="#1e1e30" stroke-width="0.8"/>
+            <text x="203" y="136" style="font-size:7px;fill:rgba(255,255,255,0.75);text-anchor:middle;font-family:sans-serif;">Study</text>
+            <!-- 门 -->
+            <line x1="162" y1="152" x2="188" y2="152" stroke="#07070d" stroke-width="2"/>
+            <path d="M162,152 Q162,138 188,138" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- parents room (lower left) -->
+            <rect x="4" y="174" width="116" height="31" fill="#0d0d1a" stroke="#1e1e30" stroke-width="0.8"/>
+            <text x="62" y="191" style="font-size:7px;fill:rgba(255,255,255,0.75);text-anchor:middle;font-family:sans-serif;">Parents' Room</text>
+            <!-- 门 -->
+            <line x1="18" y1="174" x2="42" y2="174" stroke="#07070d" stroke-width="2"/>
+            <path d="M18,174 Q18,162 42,162" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- parents bathroom (lower right) -->
+            <rect x="150" y="174" width="106" height="31" fill="#0d0d1a" stroke="#1e1e30" stroke-width="0.8"/>
+            <text x="203" y="191" style="font-size:7px;fill:rgba(255,255,255,0.75);text-anchor:middle;font-family:sans-serif;">Parents' Bath</text>
+            <!-- 门 -->
+            <line x1="162" y1="174" x2="188" y2="174" stroke="#07070d" stroke-width="2"/>
+            <path d="M162,174 Q162,162 188,162" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" stroke-dasharray="2,1.5"/>
+
+            <!-- ── 星星标记（玩家位置）── -->
+            <g id="player-star" style="transform:translate(40px,134px);transition:transform 0.55s cubic-bezier(0.34,1.4,0.64,1);">
+              <path id="star-shape"
+                d="M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z"
+                fill="#a08cff" opacity="0.95"/>
+              <circle r="8" fill="none" stroke="#a08cff" stroke-width="0.7" opacity="0.25"/>
+              <circle r="4" fill="rgba(160,140,255,0.12)"/>
+            </g>
+
+          </svg>
+        </div>
+      </div>
+      <div id="choices-box">
+        <div class="panel-lbl">Actions</div>
+        <div id="choices-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameover-screen" class="screen">
+  <div class="go-wrap">
+    <div id="go-icon">×</div>
+    <h2 id="go-title">The dream swallowed you</h2>
+    <p id="go-room"></p>
+    <p id="go-text"></p>
+    <button class="btn" id="retry-btn" style="font-family:var(--font);font-size:0.82rem;letter-spacing:0.1em;color:#000;background:#fff;border:none;padding:0.8rem 2.4rem;cursor:pointer;margin-top:1rem;">Dream Again</button>
+  </div>
+</div>
+
+<!-- WIN -->
+<div id="win-screen" class="screen">
+  <div class="win-wrap">
+    <div id="win-icon">◇</div>
+    <h2 id="win-title">你抓住了五个锚点</h2>
+    <div class="win-div"></div>
+    <div class="win-items" id="win-items"></div>
+    <div class="win-div"></div>
+    <div id="win-reveal"></div>
+    <div id="win-truth"></div>
+    <button id="winrestart-btn" style="font-family:var(--font);font-size:0.82rem;letter-spacing:0.1em;color:#000;background:#fff;border:none;padding:0.8rem 2.4rem;cursor:pointer;">Dream Again</button>
+  </div>
+</div>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Still Life Coding</title>
+    <style>
+        *{
+            margin: 0;
+            box-sizing:border-box;
+
+        }
+        main {
+            aspect-ratio: 2 / 1.5;
+            border: 1px solid magenta;
+            position: relative;
+            background: #020024;
+            background: linear-gradient(90deg,rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+        }
+
+        #table {
+            width: 100%;
+            height: 20%;
+            background-color: lightgray;
+            position: absolute;
+            bottom: 0;
+        }
+
+        #cloth {
+            width: 70%;
+            height: 70%;
+            background: linear-gradient(
+                45deg,
+                rgba(255, 242, 0, 1) 0%,
+                rgba(86, 222, 32, 1) 40%,
+                rgba(255, 242, 0, 1) 77%,
+                rgba(86, 222, 32, 1) 100%
+            );
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
+            bottom: 20%;
+            transform: skew(30deg);
+        }
+
+        #objects {
+            width: 50%;
+            height: 70%;
+            border: 1px solid blue;
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
+            bottom: 7%;
+            z-index: 10;
+        }
+
+        #pineapple {
+            width: 30%;
+            height: 70%;
+            border: 1px solid purple;
+            position: absolute;
+            bottom: 10%;
+            left: 10%;
+        }
+
+        #pa-fruit {
+            width: 100%;
+            height: 50%;
+            position: absolute;
+            bottom: 5%;
+            background: #ffd500;
+            background: linear-gradient(
+                180deg,
+                rgba(255, 213, 0, 1) 0%,
+                rgba(134, 237, 83, 1) 100%
+            );
+            border-radius: 35%;
+            /* z-index: 20; */
+        }
+
+        #pa-shadow {
+            width: 100%;
+            height: 10%;
+            background: black;
+            border-radius: 50%;
+            opacity: 0.25;
+            position: absolute;
+            bottom: -5%;
+            z-index: -5;
+            filter:blur(5px);
+        }
+
+        #pa-stem {
+            width: 100%;
+            height: 60%;
+            background-color: green;
+            clip-path: polygon(
+40% 100%, 16% 83%, 1% 50%, 25% 65%, 15% 27%, 35% 53%, 38% 0%, 53% 50%, 63% 0%, 72% 49%, 91% 26%, 83% 66%, 100% 52%, 93% 83%, 69% 97%, 60% 100%);
+            position: absolute;
+            bottom: 40%;
+        }
+
+        .apples {
+            width: 10%;
+            height: 10%;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        #apple-1 {
+            bottom: 5%;
+            left: 50%;
+        }
+
+        #apple-2 {
+            bottom: 10%;
+            left: 40%;
+        }
+
+        .shine {
+            width: 30%;
+            height: 30%;
+            background-color: white;
+            position: absolute;
+            right: 15%;
+            top: 15%;
+            border-radius: 50%;
+            opacity: 0.75;
+            filter: blur(3px);
+        }
+
+        #pencil {
+            width: 20%;
+            height: 2%;
+            background-color: green;
+            position: absolute;
+            bottom: 5%;
+            left: 32%;
+            transform: rotate(30deg);
+        }
+
+        #bottle {
+            width: 50%;
+            height: 50%;
+            background-color: blue;
+            position: absolute;
+            bottom: 5%;
+            right: 10%;
+            opacity: 0.5;
+            clip-path: polygon(37% 15%, 64% 0%, 54% 54%, 77% 51%, 53% 100%, 31% 100%, 7% 52%, 37% 57%);
+        }
+    </style>
+</head>
+<body>
+    <main>
+
+        <div id="objects">
+            <div id="pineapple">
+                <div id="pa-stem"></div>
+                <div id="pa-fruit"></div>
+                <div id="pa-shadow"></div>
+            </div>
+            
+            <div class="apples" id="apple-1">
+                <div class="shine"></div>
+            </div>
+            <div class="apples" id="apple-2">
+                <div class="shine"></div>
+            </div>
+            
+            <div id="pencil"></div>
+            
+            <div id="bottle"></div>
+        </div>
+        
+         
+        <div id="table">
+<div id="cloth"></div>
+
+        </div>
+    </main>
+</body>
+</html>

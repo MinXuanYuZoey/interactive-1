@@ -1,0 +1,22 @@
+:root {
+  --green: springgreen;
+}
+
+body {
+  background-color: black;
+  color: var(--green);
+  font-family: monospace;
+  font-size: 15px;
+}
+
+.choice {
+  cursor: pointer;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin: 0;
+}
+
+.choice:hover {
+  background-color: var(-green);
+  color: black;
+}
