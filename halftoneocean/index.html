@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>黑白波点海洋 · 纯网点俯视版</title>
+  <style>
+:root {
+  color-scheme: light;
+  --foreground: #111;
+  --muted-foreground: #626262;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #fff; color: var(--foreground); }
+body.ocean-standalone { padding: 0; overflow: hidden; }
+body.ocean-standalone main { position: fixed; inset: 0; width: 100%; max-width: none; }
+
+#ocean-pure-dots { width: 100%; overflow: hidden; background: #fff; }
+#ocean-pure-dots canvas { display: block; width: 100%; height: auto; aspect-ratio: 7 / 5; background: #fff; }
+.ocean-standalone #ocean-pure-dots { position: fixed; inset: 0; width: 100vw; height: 100vh; }
+.ocean-standalone #ocean-pure-dots canvas {
+  position: absolute; left: 50%; top: 50%;
+  width: max(100vw, 140vh); height: auto;
+  transform: translate(-50%, -50%);
+}
+
+</style>
+</head>
+<body class="ocean-standalone">
+  <main>
+    <div id="ocean-pure-dots">
+  <canvas role="img" aria-label="纯黑白网点组成的海底世界。五条俯视魔鬼鱼与五条俯视鲨鱼分组依次斜向游过。每个种类再次出现时会整组反向游回，鱼群保持松散分布和局部自然交叠，背景网点持续柔和起伏。"></canvas>
+</div>
+
+  </main>
+  <script>
+// 俯视轮廓，局部坐标中鱼头始终朝右（x 正方向）。
+// 曲线只用于决定网点的大小，最终画面不绘制实心鱼或描边。
+window.OCEAN_SHAPES = {
+  manta: `
+    M .73 -.105
+    C .83 -.11 .91 -.14 .89 -.22
+    C .86 -.26 .79 -.22 .72 -.21
+    C .63 -.225 .57 -.27 .51 -.34
+    C .31 -.60 .16 -.97 -.18 -1.33
+    C -.13 -1.06 -.19 -.78 -.34 -.55
+    C -.43 -.39 -.56 -.25 -.63 -.15
+    Q -.70 -.14 -.71 -.075
+    L -.57 -.04
+    C -.88 -.03 -1.14 -.032 -1.53 -.022
+    Q -1.63 -.016 -1.68 0
+    C -1.32 -.018 -.95 .03 -.57 .04
+    L -.71 .075 Q -.70 .14 -.63 .15
+    C -.56 .25 -.43 .39 -.34 .55
+    C -.19 .78 -.13 1.06 -.18 1.33
+    C .16 .97 .31 .60 .51 .34
+    C .57 .27 .63 .225 .72 .21
+    C .79 .22 .86 .26 .89 .22
+    C .91 .14 .83 .11 .73 .105
+    Q .70 0 .73 -.105 Z`,
+  // 依据 Jedd Wasson 的真实大白鲨俯视航拍校正比例与尾鳍投影。
+  shark: `
+    M 1.2667 0.0000
+    C 1.2533 0.0483 0.9467 0.1778 0.6622 0.1956
+    C 0.6267 0.2000 0.5867 0.2044 0.5511 0.2044
+    C 0.5067 0.3467 0.4400 0.4889 0.3289 0.5689
+    Q 0.2533 0.6178 0.2400 0.5873
+    C 0.2311 0.4990 0.2800 0.3822 0.3022 0.2756
+    Q 0.2933 0.2311 0.2489 0.1956
+    C 0.0978 0.1879 -0.0400 0.1659 -0.1644 0.1431
+    C -0.3200 0.1436 -0.4667 0.1413 -0.6133 0.1323
+    C -0.7556 0.1415 -0.8622 0.1173 -0.9422 0.0375
+    C -1.1067 0.0352 -1.2667 0.0260 -1.4089 0.0133
+    Q -1.5733 0.0035 -1.6044 0.0048
+    Q -1.6267 -0.0089 -1.5556 -0.0131
+    C -1.4444 -0.0201 -1.2978 -0.0277 -1.1689 -0.0222
+    Q -1.0844 -0.0347 -1.0356 -0.1353
+    Q -1.0089 -0.1748 -0.9556 -0.1116
+    Q -0.9289 -0.0844 -0.9111 -0.0434
+    C -0.8222 -0.1047 -0.7022 -0.1220 -0.5956 -0.1244
+    C -0.4800 -0.1123 -0.3733 -0.1150 -0.3111 -0.1126
+    Q -0.2889 -0.1596 -0.2356 -0.1544
+    L -0.2178 -0.1378
+    C -0.0667 -0.1390 0.0933 -0.1719 0.2444 -0.1908
+    C 0.2711 -0.2933 0.2400 -0.4039 0.2000 -0.5167
+    C 0.1778 -0.5819 0.1511 -0.6557 0.1822 -0.6622
+    C 0.2578 -0.6667 0.3511 -0.5822 0.4133 -0.4800
+    C 0.4711 -0.3822 0.5156 -0.2844 0.5333 -0.2000
+    C 0.6756 -0.2089 0.8267 -0.1822 0.9733 -0.1372
+    C 1.1511 -0.0806 1.2311 -0.0415 1.2667 0.0000 Z`
+};
+
+// 黑白波点海洋，纯网点俯视版。
+// 改 STEP 调整网点间距；改 chapters 内的参数调整每条鱼的路线、速度与层级。
+(() => {
+  'use strict';
+  const root = document.getElementById('ocean-pure-dots');
+  const canvas = root.querySelector('canvas');
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const W = 980, H = 700, STEP = 8.4;
+  let time = 10, running = !motion.matches, visible = true;
+  let handle = 0, last = 0, lastDraw = 0, displayScale = 1;
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const smooth = (a, b, x) => {
+    const t = clamp((x - a) / (b - a), 0, 1);
+    return t * t * (3 - 2 * t);
+  };
+
+  // 所有像素来自黑色圆点。GPU 不可用时回退到 Canvas 2D。
+  let gl = null;
+  try { gl = canvas.getContext('webgl', {alpha: false, antialias: true, depth: false}); }
+  catch (_) {}
+  const ctx = gl ? null : canvas.getContext('2d', {alpha: false});
+  let scaleUniform;
+  if (gl) {
+    const compile = (type, source) => {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, source); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw Error(gl.getShaderInfoLog(s));
+      return s;
+    };
+    const program = gl.createProgram();
+    gl.attachShader(program, compile(gl.VERTEX_SHADER, `
+      attribute vec3 point;
+      uniform vec2 resolution;
+      uniform float scale;
+      varying float radius;
+      varying float diameter;
+      void main() {
+        vec2 p = point.xy / resolution * 2.0 - 1.0;
+        gl_Position = vec4(p.x, -p.y, 0.0, 1.0);
+        radius = point.z * scale;
+        diameter = ceil(radius * 2.0 + 2.0);
+        gl_PointSize = diameter;
+      }`));
+    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, `
+      precision mediump float;
+      varying float radius;
+      varying float diameter;
+      void main() {
+        float d = length((gl_PointCoord - 0.5) * diameter);
+        float a = clamp(radius - d + 0.5, 0.0, 1.0);
+        if (a <= 0.0) discard;
+        gl_FragColor = vec4(0.0, 0.0, 0.0, a);
+      }`));
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw Error(gl.getProgramInfoLog(program));
+    gl.useProgram(program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    const location = gl.getAttribLocation(program, 'point');
+    gl.enableVertexAttribArray(location);
+    gl.vertexAttribPointer(location, 3, gl.FLOAT, false, 0, 0);
+    gl.uniform2f(gl.getUniformLocation(program, 'resolution'), W, H);
+    scaleUniform = gl.getUniformLocation(program, 'scale');
+    gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.clearColor(1, 1, 1, 1);
+  }
+
+  // 用轮廓生成距离场，只控制边缘网点的收缩，不引入图片、材质或照明。
+  function makeField(path) {
+    const size = 640, span = 3.84, origin = -1.92;
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const g = c.getContext('2d', {willReadFrequently: true});
+    g.setTransform(size / span, 0, 0, size / span, -origin * size / span, -origin * size / span);
+    g.fill(new Path2D(path));
+    const pixels = g.getImageData(0, 0, size, size).data;
+    const inside = new Uint8Array(size * size);
+    const distance = new Float32Array(size * size);
+    for (let i = 0; i < inside.length; i++) inside[i] = pixels[i * 4 + 3] > 127 ? 1 : 0;
+    distance.fill(size * 2);
+    for (let y = 1; y < size - 1; y++) for (let x = 1; x < size - 1; x++) {
+      const i = y * size + x;
+      if (inside[i] !== inside[i - 1] || inside[i] !== inside[i + 1] ||
+          inside[i] !== inside[i - size] || inside[i] !== inside[i + size]) distance[i] = 0;
+    }
+    const diagonal = Math.SQRT2;
+    for (let y = 1; y < size - 1; y++) for (let x = 1; x < size - 1; x++) {
+      const i = y * size + x;
+      distance[i] = Math.min(distance[i], distance[i - 1] + 1, distance[i - size] + 1,
+        distance[i - size - 1] + diagonal, distance[i - size + 1] + diagonal);
+    }
+    for (let y = size - 2; y > 0; y--) for (let x = size - 2; x > 0; x--) {
+      const i = y * size + x;
+      distance[i] = Math.min(distance[i], distance[i + 1] + 1, distance[i + size] + 1,
+        distance[i + size + 1] + diagonal, distance[i + size - 1] + diagonal);
+    }
+    for (let i = 0; i < distance.length; i++) distance[i] = (distance[i] + .5) * (inside[i] ? 1 : -1) * span / size;
+    return {distance, size, scale: size / span, origin};
+  }
+  const fields = {
+    shark: makeField(window.OCEAN_SHAPES.shark),
+    manta: makeField(window.OCEAN_SHAPES.manta)
+  };
+
+  // 两组鱼采用各自的直线斜向路线，叠加很轻的横向游动，不再受波浪驱动。
+  function school(kind, label, definitions) {
+    const leaders = definitions.map(a => {
+      const dx = a.ex - a.x, dy = a.ey - a.y;
+      return {...a, kind, field: fields[kind], angle: Math.atan2(dy, dx), duration: Math.hypot(dx, dy) / a.speed};
+    });
+    const animals = leaders.sort((a, b) => b.depth - a.depth);
+    return {kind, label, animals, duration: Math.max(...animals.map(a => a.enter + a.duration)) + .8};
+  }
+  const mantaRoutes = [
+      {x: -390, y: 100, ex: 1340, ey: 600, size: 185, speed: 70, enter: 0, depth: .94, contrast: 1, phase: 1.1},
+      {x: -380, y: -360, ex: 1320, ey: 340, size: 136, speed: 82, enter: 1.5, depth: .60, contrast: .58, phase: 3.7},
+      {x: -350, y: 430, ex: 1300, ey: 850, size: 96, speed: 88, enter: 3.8, depth: .30, contrast: .34, phase: 2.0},
+      {x: 120, y: -430, ex: 850, ey: 1060, size: 122, speed: 68, enter: .8, depth: .74, contrast: .76, phase: 4.8},
+      {x: 1260, y: 130, ex: -310, ey: 640, size: 88, speed: 92, enter: 4.6, depth: .43, contrast: .43, phase: 5.7}
+  ];
+  const sharkRoutes = [
+      {x: -400, y: 600, ex: 1340, ey: 100, size: 185, speed: 76, enter: 0, depth: .94, contrast: 1, phase: .4},
+      {x: -380, y: -380, ex: 1320, ey: 300, size: 140, speed: 88, enter: 1.7, depth: .58, contrast: .58, phase: 3.0},
+      {x: -350, y: 430, ex: 1300, ey: 850, size: 100, speed: 95, enter: 3.8, depth: .29, contrast: .34, phase: 5.2},
+      {x: 130, y: -430, ex: 820, ey: 1050, size: 125, speed: 70, enter: .8, depth: .74, contrast: .76, phase: 2.1},
+      {x: 1280, y: 130, ex: -300, ey: 600, size: 90, speed: 96, enter: 4.8, depth: .42, contrast: .43, phase: 4.4}
+  ];
+  const reverseRoutes = routes => routes.map(a => ({
+    ...a, x: a.ex, y: a.ey, ex: a.x, ey: a.y, phase: a.phase + Math.PI
+  }));
+  // 每个种类下一次出现时整组反向游回，再从第一套方向继续循环。
+  const chapters = [
+    school('manta', '俯视 · 魔鬼鱼群', mantaRoutes),
+    school('shark', '俯视 · 鲨鱼群', sharkRoutes),
+    school('manta', '俯视 · 魔鬼鱼群', reverseRoutes(mantaRoutes)),
+    school('shark', '俯视 · 鲨鱼群', reverseRoutes(sharkRoutes))
+  ];
+  const cycleDuration = chapters.reduce((sum, c) => sum + c.duration, 0);
+  function chapterAt(t) {
+    let local = ((t % cycleDuration) + cycleDuration) % cycleDuration;
+    for (const chapter of chapters) {
+      if (local < chapter.duration) return {chapter, local};
+      local -= chapter.duration;
+    }
+    return {chapter: chapters[0], local: 0};
+  }
+  function positionAt(a, elapsed, globalTime) {
+    const distance = a.speed * clamp(elapsed, 0, a.duration);
+    const ca = Math.cos(a.angle), sa = Math.sin(a.angle);
+    const sway = (a.kind === 'manta' ? 8 : 5) * Math.sin(elapsed * .18 + a.phase);
+    return {
+      x: a.x + ca * distance - sa * sway,
+      y: a.y + sa * distance + ca * sway
+    };
+  }
+  function pose(a, elapsed, globalTime = elapsed) {
+    const p = positionAt(a, elapsed, globalTime), epsilon = .07;
+    const before = positionAt(a, Math.max(0, elapsed - epsilon), globalTime - epsilon);
+    const after = positionAt(a, Math.min(a.duration, elapsed + epsilon), globalTime + epsilon);
+    const heading = Math.atan2(after.y - before.y, after.x - before.x);
+    return {
+      a, x: p.x, y: p.y, cos: Math.cos(heading), sin: Math.sin(heading), turn: 0,
+      beat: elapsed * (a.kind === 'shark' ? 1.5 + a.speed * .009 : 1.24) + a.phase
+    };
+  }
+  function posesAt(t) {
+    const {chapter, local} = chapterAt(t);
+    const poses = [];
+    for (const a of chapter.animals) {
+      const elapsed = local - a.enter;
+      if (elapsed >= 0 && elapsed <= a.duration) poses.push(pose(a, elapsed, t));
+    }
+    return {chapter, poses};
+  }
+  function sample(p, x, y, out) {
+    const a = p.a, s = a.size, rx = x - p.x, ry = y - p.y;
+    if (Math.abs(rx) > s * 1.94 || Math.abs(ry) > s * 1.94) return false;
+    let u = (rx * p.cos + ry * p.sin) / s;
+    let v = (-rx * p.sin + ry * p.cos) / s;
+    if (a.kind === 'shark') {
+      const tail = clamp((.68 - u) / 2.38, 0, 1);
+      v -= Math.sin(p.beat + u * 2.9) * (.007 + .21 * tail * tail) + p.turn * tail * tail * .16;
+    } else {
+      const side = v < 0 ? -1 : 1;
+      const phase = p.beat + side * (.1 + p.turn * .7);
+      v /= .92 + .075 * Math.cos(phase - Math.abs(v) * .8);
+      u += Math.pow(Math.abs(v), 1.65) * .09 * Math.sin(phase - Math.abs(v) * 1.3);
+      if (u < -.45) v -= .055 * Math.sin(p.beat * .7 - u * 3.0) * Math.min(1, -u - .45);
+    }
+    const f = a.field, tx = (u - f.origin) * f.scale, ty = (v - f.origin) * f.scale;
+    const ix = Math.floor(tx), iy = Math.floor(ty);
+    if (ix < 1 || iy < 1 || ix >= f.size - 2 || iy >= f.size - 2) return false;
+    const fx = tx - ix, fy = ty - iy, i = iy * f.size + ix;
+    const d = (f.distance[i] * (1 - fx) + f.distance[i + 1] * fx) * (1 - fy)
+      + (f.distance[i + f.size] * (1 - fx) + f.distance[i + f.size + 1] * fx) * fy;
+    if (d < -.019) return false;
+    out.alpha = smooth(-.019, .015, d);
+    // 轮廓边缘自然缩成小点，内部使用稳定的纯网点，不叠加波浪条纹。
+    const edge = smooth(-.008, .07, d);
+    const radius = STEP * .405 * (.58 + .42 * edge) * Math.sqrt(a.contrast);
+    out.area = Math.PI * radius * radius;
+    return true;
+  }
+
+  const sampleValue = {alpha: 0, area: 0};
+  const dots = [];
+  // 背景是稳定、均匀的浅网点，不弯曲、不聚散，也不随时间漂移。
+  for (let y = STEP / 2; y < H; y += STEP) for (let x = STEP / 2; x < W; x += STEP) dots.push([x, y]);
+  const vertices = new Float32Array(dots.length * 3);
+  if (gl) gl.bufferData(gl.ARRAY_BUFFER, vertices.byteLength, gl.DYNAMIC_DRAW);
+
+  // 背景网点的可见起伏：两层不同方向的慢速摆动叠加点径呼吸。
+  // 位移足够被肉眼看见，但保持平缓，不形成集中的波峰或弧形浪带。
+  function backgroundDotAt(dot, t, out) {
+    out.x = dot[0] + 3.2 * Math.sin(dot[1] * .024 - t * .72)
+      + 1.35 * Math.sin(dot[1] * .052 + t * .48);
+    out.y = dot[1] + 2.6 * Math.sin(dot[0] * .018 + t * .58)
+      + .9 * Math.sin((dot[0] + dot[1]) * .013 - t * .42);
+    const pulse = Math.pow(.5 + .5 * Math.sin(out.x * .011 + out.y * .014 - t * .55), 2);
+    out.radius = .31 + .23 * pulse;
+  }
+  const backgroundDot = {x: 0, y: 0, radius: .34};
+
+  function draw() {
+    const {chapter, poses} = posesAt(time);
+    let n = 0, batch = 0;
+    if (!gl) {
+      ctx.setTransform(displayScale, 0, 0, displayScale, 0, 0);
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#000'; ctx.beginPath();
+    }
+    for (const dot of dots) {
+      backgroundDotAt(dot, time, backgroundDot);
+      const x = backgroundDot.x, y = backgroundDot.y, seaRadius = backgroundDot.radius;
+      let area = 0, remaining = 1;
+      // 在变成网点前按实体遮挡合成，不描边，也不在重叠处挖白色间隙。
+      for (const p of poses) {
+        if (!sample(p, x, y, sampleValue)) continue;
+        area += remaining * sampleValue.alpha * sampleValue.area;
+        remaining *= 1 - sampleValue.alpha;
+        if (remaining < .003) break;
+      }
+      area += remaining * Math.PI * seaRadius * seaRadius;
+      const radius = Math.sqrt(area / Math.PI);
+      vertices[n++] = x; vertices[n++] = y; vertices[n++] = radius;
+      if (!gl) {
+        ctx.moveTo(x + radius, y); ctx.arc(x, y, radius, 0, Math.PI * 2);
+        if (++batch === 192) {ctx.fill(); ctx.beginPath(); batch = 0;}
+      }
+    }
+    if (gl) {
+      gl.viewport(0, 0, canvas.width, canvas.height); gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform1f(scaleUniform, displayScale);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices); gl.drawArrays(gl.POINTS, 0, dots.length);
+    } else ctx.fill();
+  }
+  function resize() {
+    const width = Math.max(1, canvas.getBoundingClientRect().width);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(width * H / W * dpr);
+    displayScale = canvas.width / W; draw();
+  }
+  function schedule() {
+    if (running && visible && !document.hidden && !handle) handle = requestAnimationFrame(frame);
+  }
+  function frame(now) {
+    handle = 0;
+    if (!root.isConnected || !running || !visible || document.hidden) {last = 0; return;}
+    if (!last) last = now;
+    time += Math.min(.08, (now - last) / 1000); last = now;
+    if (now - lastDraw > 30) {draw(); lastDraw = now;}
+    schedule();
+  }
+  function setRunning(value) {
+    running = value; last = 0;
+    if (handle) {cancelAnimationFrame(handle); handle = 0;}
+    schedule();
+  }
+  motion.addEventListener('change', event => {if (event.matches) setRunning(false);});
+  document.addEventListener('visibilitychange', () => {last = 0; schedule();});
+  new ResizeObserver(resize).observe(canvas);
+  new IntersectionObserver(entries => {visible = entries[0].isIntersecting; last = 0; schedule();}).observe(root);
+  resize(); setRunning(running);
+})();
+
+</script>
+</body>
+</html>
